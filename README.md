@@ -30,32 +30,33 @@ We recommend you to follow [Google's guide to Writing a Proposal](https://google
 
 You can send the proposal link to any readable format you wish: Google Docs, plain text, in markdown... and preferably hosted online, accessible with a common browser **without downloading anything**.
 
-You can also ask for a review anytime to the community or mentor candidates before the contributor application deadline. It's much easier if you get feedback early than to wait for the last moment.
+We highly recommend you to ask for a review anytime to the community or mentor candidates before the contributor application deadline. It's much easier if you get feedback early than to wait for the last moment.
   
 
 ## Project Ideas
 
 You can also propose your own.
 
+### CLI / Deploy / FaaS Unification
 
-### Builder
+**Skills**: Bash, Batch, PowerShell, JavaScript, TypeScript
 
-**Skills**: Go, Docker, BuildKit, Sandboxing, Kubernetes
-
-**Expected size of the project**: Medium (175 hours)
+**Expected size of the project**: Small (90 hours)
 
 **Difficulty rating**: Medium
 
 **Description**:
-Currently MetaCall is offered as Docker image on [Docker Hub](https://hub.docker.com/r/metacall/core). It includes 4 tags (`deps`, `dev`, `runtime` and `cli`) with only one architecture (`amd64`). Right now all the languages are packaged at once into the image, producing a big sized image, specially on the `dev` tag. The idea of this project is to implement a CLI with a separated API which provides a way to generate compact Docker images with MetaCall runtime. Docker does not allow to selectively choose from multiple layers merging them into one with efficient caching, we could do this by means of templating the Dockerfile itself but using the Buildkit API will make the solution much more robust and with the benefit of all the features from Buildkit like caching.
 
-Another main requirement for this project is that it must be run under rootless and daemonless, inside a Dockerized environment (i.e this must be able to be run inside Docker without permissions and without a Docker daemon, so it can be run in a Kubernetes cluster, pushing and pulling the resulting images from a private registry).
+MetaCall offers binaries and a CLI that can be downloaded and installed easily through [`metacall/install`](https://github.com/metacall/install). This provides a CLI for executing code and a REPL for interacting with some MetaCall functionalities. A part from this, there is two separated projects that are part of the full development lifecycle, [`metacall/deploy`](https://github.com/metacall/deploy) which is a CLI for deploying into the [FaaS](https://dashboard.metacall.io) and [`metacall/faas`](https://github.com/metacall/faas) which is a reimplementation of the FaaS for local development. These two tools are right now completely separated from the CLI although they are necessary for the full development lifecycle. The idea of this project is to unify them into the same project. For example, having `metacall deploy ...` for executing the deploy CLI, or `metacall faas` for executing the FaaS locally. With this options, all tools will be unified into one and the end users will install all of them once the CLI is installed. For achieving this we are open to proposals but probably it will be needed to modify the install scripts (Unix and Windows) and install both projects as a post-install step and modify the launcher for recognizing these additional options for launching those tools.
 
-This project has to be efficient and sandboxed, focused on FaaS development and producing compact images in terms of size and dependencies, so the bandwidth and attack surface is reduced.
+**Expected outcomes**: Cross-platform implementation of unified install scripts for installing together the Deploy CLI and the FaaS with the main core CLI.
 
-**Expected outcomes**: A command line interface and library that is able to selectively compose docker images and run inside Docker/Kubernetes for MetaCall with efficient caching and compact size.
+**Possible mentors**: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
 
-**Possible mentors**:  Fernando Vaño Garcia, Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
+**Resources**:
+ - MetaCall Install: https://github.com/metacall/install
+ - MetaCall Deploy: https://github.com/metacall/deploy
+ - MetaCall FaaS: https://github.com/metacall/faas
 
 ### MacOS Distributable
 
@@ -82,9 +83,111 @@ The objective of this idea is to improve the MacOS support:
 
 **Possible mentors**: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
 
-
 **Resources**:
  - MetaCall Core Windows Environment Install Script: https://github.com/metacall/core/blob/develop/tools/metacall-environment.ps1
+
+
+### Connect Core CI with Distributables
+
+**Skills**: GitHub Actions, Bash, Batch
+
+**Expected size of the project**: Small (90 hours)
+
+**Difficulty rating**: Medium
+
+**Description**:
+
+MetaCall provides binary distributions through an installer for end users. In order to provide binaries that follow latest versions with the main core repo, we would need to have those external distributable repositories linked to the releases of the main core repository. The objective of this project would be to design CIs that link all those repositories with the main core repository, so each time a new version is tagged in the main repository, all distributables are generated for the latest version. This will also help to check if there is a breaking change of the last version with the distributables. This may require to modify existing CIs and think about new ways of handling the contiuous delivery of the organization.
+
+**Expected outcomes**: Consistent CI across multiple repositories in order to provide continouous delivery of MetaCall binaries with report of errors for when some distributable fails on a version of MetaCall Core.
+
+**Possible mentors**: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
+
+**Resources**:
+ - MetaCall Core: https://github.com/metacall/core
+ - MetaCall Windows Distributable: https://github.com/metacall/distributable-windows
+ - MetaCall Linux Distributable: https://github.com/metacall/distributable-linux
+ - MetaCall MacOS Distributable: https://github.com/metacall/distributable-macos
+
+### MetaCall Core Sandboxing with CLI integration
+
+**Skills**: C/C++, Linux Kernel
+
+**Expected size of the project**: Small (90 hours)
+
+**Difficulty rating**: Medium
+
+**Description**:
+
+Modern runtimes like Deno provide a command line interface for allowing / restricting capabilities and sandbox the execution of the code. We want to provide a similar approach but based on libseccomp. This approach will provide MetaCall CLI a standard system for filtering system calls independently of the language being executed. This will provide a safe sandboxing primitives that can be shared between runtimes at system call level. As a result MetaCall will be able to be executed safely without need to use Docker or any other virtualization tool.
+
+MetaCall Core has a plugin extension system which allows to provide additional functionality to the core without the need of modifying the core itself. Right now one example of those plugins is the `backtrace`, it provides full stack trace in a cross-platform manner for when there is a segmentation fault. We want also to provide sandboxing in Linux for multiple architectures through the use of `libseccomp`. A part from this, we also want it to be fully configurable from the CLI. So for example, we can do somethin like: `metacall --disable-filesystem main.js` and if the `main.js` script tries to load a file from the filesystem, the kernel will kill the program.
+
+**Expected outcomes**: A full sandboxed implementation that can be used either programatically or through CLI options.
+
+**Possible mentors**: Jose Antonio Dominguez, Alexandre Gimenez Fernandez, Vicente Eduardo Ferrer Garcia
+
+**Resources**:
+ - MetaCall Sandboxing Current State: https://github.com/metacall/core/pull/470
+ - `libseccomp` GitHub Repository: https://github.com/seccomp/libseccomp
+ - Example of usage for `libseccomp`: https://github.com/gebi/teach-seccomp/blob/master/step-2/example.c
+ - Example of CMake find script for `libseccomp`: https://webkit-search.igalia.com/webkit/source/Source/cmake/FindLibseccomp.cmake
+ - MetaCall CLI Source: https://github.com/metacall/core/tree/develop/source/cli/metacallcli
+ - Deno Permission List: https://deno.land/manual/getting_started/permissions#permissions-list
+
+### FaaS TypeScript Reimplementation
+
+**Skills**: TypeScript
+
+**Expected size of the project**: Medium (175 hours)
+
+**Difficulty rating**: Medium
+
+**Description**:
+This project offers a reimplementation of [MetaCall FaaS](https://dashboard.metacall.io) but with a simpler and less performant implementation. The objective of this FaaS reimplementation is to provide a simple and portable FaaS that can be run from the CLI in order to locally test the functions and complete projects that can be deployed into MetaCall FaaS. This is a very important part of the project because it is needed in order to fullfill the developer workflow when developing distributed polyglot applications.
+
+It should mimick the [MetaCall FaaS REST API](https://github.com/metacall/deploy/blob/master/src/test/integration.protocol.spec.ts) but without need of authentication and with only the required capabilities for development. This repository will share parts with MetaCall FaaS through [MetaCall Protocol](https://github.com/metacall/protocol) so code can be reused between the repositories.
+
+For better deployment, the MetaCall FaaS should be integrable with MetaCall CLI, providing a self contained distributable with all the compiled code which can be launched or invoked from an external CLI via API.
+
+**Expected outcomes**: An embeddable library that can be used for locally testing MetaCall projects as if they were hosted on the FaaS.
+
+**Possible mentors**: Thomas Rory Gummerson, Jose Antonio Dominguez, Alexandre Gimenez Fernandez, Vicente Eduardo Ferrer Garcia
+
+**Resources**:
+ - MetaCall FaaS TypeScript reimplementation repository: https://github.com/metacall/faas
+ - MetaCall FaaS: https://dashboard.metacall.io
+ - Video Deploying a hundred functions into MetaCall FaaS using the Dashboard: https://www.youtube.com/watch?v=2RAqTmQAWEc
+ - MetaCall Protocol: https://github.com/metacall/protocol
+ - MetaCall Deploy: https://github.com/metacall/deploy
+
+### MetaCall Examples CI
+
+**Skills**: GitHub Actions, Bash, Devops
+
+**Expected size of the project**: Medium (175 hours)
+
+**Difficulty rating**: Medium
+
+**Description**:
+
+Currently there is no way to test all the examples and deployable examples of Metacall. The goal is to create a comprehensive CI system for all the examples of the core and Metacall FaaS, you would need to create a single repository for each Metacall version. Each repository would download the distributables for all supported operating systems, clone the example repositories from the Metacall's GitHub account, and run each example to test it. This would ensure that all examples are working correctly on all supported platforms for new releases.
+Similarly, the same process would be followed for the [@metacall/deploy](https://github.com/metacall/deploy) package, where deployable examples would be cloned and deployed to a FaaS website using Deploy CLI to ensure that they are working as expected.
+
+**Expected outcomes**:
+
+The expected outcome will be a comprehensive testing and deployment system that ensures all examples for the Metacall and FaaS are working correctly on all supported platforms. This will provide confidence to users that the software is functioning as expected and will reduce the likelihood of issues arising in production. Additionally, this system could be used to automate future updates and releases, further streamlining the development process.
+
+**Possible mentors**: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
+
+**Resources**:
+ - Distributable Linux: https://github.com/metacall/distributable-linux
+ - Distributable Windows: https://github.com/metacall/distributable-windows
+ - Distributable MacOs: https://github.com/metacall/distributable-macos
+ - MetaCall Protocol: https://github.com/metacall/protocol
+ - MetaCall Deploy: https://github.com/metacall/deploy
+ - MetaCall FaaS: https://dashboard.metacall.io
+ - Video Deploying a hundred functions into MetaCall FaaS using the Dashboard: https://www.youtube.com/watch?v=2RAqTmQAWEc
 
 ### Linux Distributable
 
@@ -139,6 +242,28 @@ We have implemented support for [deployments through CLI](https://github.com/met
   - Visual Code Extension: https://code.visualstudio.com/api/get-started/your-first-extension
   - GitHub Action: https://docs.github.com/en/actions/creating-actions/publishing-actions-in-github-marketplace
 
+### Builder
+
+**Skills**: Go, Docker, BuildKit, Sandboxing, Kubernetes
+
+**Expected size of the project**: Medium (175 hours)
+
+**Difficulty rating**: Medium
+
+**Description**:
+Currently MetaCall is offered as Docker image on [Docker Hub](https://hub.docker.com/r/metacall/core). It includes 4 tags (`deps`, `dev`, `runtime` and `cli`) with only one architecture (`amd64`). Right now all the languages are packaged at once into the image, producing a big sized image, specially on the `dev` tag. The idea of this project is to implement a CLI with a separated API which provides a way to generate compact Docker images with MetaCall runtime. Docker does not allow to selectively choose from multiple layers merging them into one with efficient caching, we could do this by means of templating the Dockerfile itself but using the Buildkit API will make the solution much more robust and with the benefit of all the features from Buildkit like caching.
+
+Another main requirement for this project is that it must be run under rootless and daemonless, inside a Dockerized environment (i.e this must be able to be run inside Docker without permissions and without a Docker daemon, so it can be run in a Kubernetes cluster, pushing and pulling the resulting images from a private registry).
+
+This project has to be efficient and sandboxed, focused on FaaS development and producing compact images in terms of size and dependencies, so the bandwidth and attack surface is reduced.
+
+**Expected outcomes**: A command line interface and library that is able to selectively compose docker images and run inside Docker/Kubernetes for MetaCall with efficient caching and compact size.
+
+**Possible mentors**:  Fernando Vaño Garcia, Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
+
+**Resources**:
+ - MetaCall Builder: https://github.com/metacall/builder
+
 ### Rust Actix + TypeScript React Server Side Rendering (tsx) Framework
 
 **Skills**: Rust, TypeScript, React
@@ -166,35 +291,6 @@ The Proof of Concept should also contain benchmarks, in order to compare it to o
  - MetaCall Rust Port Crate: https://docs.rs/metacall/latest/metacall/
  - MetaCall Rust Port Source: https://github.com/metacall/core/tree/develop/source/ports/rs_port
  - MetaCall FaaS SSR Example: https://github.com/metacall/basic-react-SSR-example
-
-
-### MetaCall examples' CI
-
-**Skills**: GitHub Actions, Bash, Devops
-
-**Expected size of the project**: Large (350 hours)
-
-**Difficulty rating**: Medium
-
-**Description**:
-
-Currently there is no way to test all the examples and deployable examples of Metacall. The goal is to create a comprehensive CI system for all the examples of the core and Metacall FaaS, you would need to create a single repository for each Metacall version. Each repository would download the distributables for all supported operating systems, clone the example repositories from the Metacall's GitHub account, and run each example to test it. This would ensure that all examples are working correctly on all supported platforms for new releases.
-Similarly, the same process would be followed for the [@metacall/deploy](https://github.com/metacall/deploy) package, where deployable examples would be cloned and deployed to a FaaS website using Deploy CLI to ensure that they are working as expected. 
-
-**Expected outcomes**:
-
-The expected outcome will be a comprehensive testing and deployment system that ensures all examples for the Metacall and FaaS are working correctly on all supported platforms. This will provide confidence to users that the software is functioning as expected and will reduce the likelihood of issues arising in production. Additionally, this system could be used to automate future updates and releases, further streamlining the development process.
-
-Possible mentors: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
-
-**Resources**:
- - Distributable Linux: https://github.com/metacall/distributable-linux
- - Distributable Windows: https://github.com/metacall/distributable-windows
- - Distributable MacOs: https://github.com/metacall/distributable-macos
- - MetaCall Protocol: https://github.com/metacall/protocol
- - MetaCall Deploy: https://github.com/metacall/deploy
- - MetaCall FaaS: https://dashboard.metacall.io
- - Video Deploying a hundred functions into MetaCall FaaS using the Dashboard: https://www.youtube.com/watch?v=2RAqTmQAWEc
 
 ## Find Us
 
