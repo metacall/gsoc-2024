@@ -51,7 +51,7 @@ MetaCall offers binaries and a CLI that can be downloaded and installed easily t
 
 **Expected outcomes**: Cross-platform implementation of unified install scripts for installing together the Deploy CLI and the FaaS with the main core CLI.
 
-**Possible mentors**: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
+**Possible mentors**: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge, Raj Aryan
 
 **Resources**:
  - MetaCall Install: https://github.com/metacall/install
@@ -152,7 +152,7 @@ For better deployment, the MetaCall FaaS should be integrable with MetaCall CLI,
 
 **Expected outcomes**: An embeddable library that can be used for locally testing MetaCall projects as if they were hosted on the FaaS.
 
-**Possible mentors**: Thomas Rory Gummerson, Jose Antonio Dominguez, Alexandre Gimenez Fernandez, Vicente Eduardo Ferrer Garcia
+**Possible mentors**: Thomas Rory Gummerson, Jose Antonio Dominguez, Alexandre Gimenez Fernandez, Vicente Eduardo Ferrer Garcia, Raj Aryan
 
 **Resources**:
  - MetaCall FaaS TypeScript reimplementation repository: https://github.com/metacall/faas
@@ -178,7 +178,7 @@ Similarly, the same process would be followed for the [@metacall/deploy](https:/
 
 The expected outcome will be a comprehensive testing and deployment system that ensures all examples for the Metacall and FaaS are working correctly on all supported platforms. This will provide confidence to users that the software is functioning as expected and will reduce the likelihood of issues arising in production. Additionally, this system could be used to automate future updates and releases, further streamlining the development process.
 
-**Possible mentors**: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge
+**Possible mentors**: Vicente Eduardo Ferrer Garcia, Gil Arasa Verge, Raj Aryan
 
 **Resources**:
  - Distributable Linux: https://github.com/metacall/distributable-linux
@@ -236,7 +236,7 @@ We have implemented support for [deployments through CLI](https://github.com/met
  - Create a GitHub action for integrating MetaCall deployments with your own CI if required.
  - Create a library for exporting the current MetaCall Inspect format into OpenAPI format, so it can be used easily on other projects.
 
-**Possible mentors**: Jose Antonio Dominguez, Alexandre Gimenez Fernandez
+**Possible mentors**: Jose Antonio Dominguez, Alexandre Gimenez Fernandez, Raj Aryan
 
 **Resources**:
   - Visual Code Extension: https://code.visualstudio.com/api/get-started/your-first-extension
