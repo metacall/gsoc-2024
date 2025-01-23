@@ -1,3 +1,7 @@
+!!!! It is 2025 already! --> Check [GSoC 2025](https://github.com/metacall/gsoc-2025).
+
+
+
 # Google Summer of Code 2024
 List of project ideas for contributors applying to the Google Summer of Code program in 2024 (GSoC 2024).
 
